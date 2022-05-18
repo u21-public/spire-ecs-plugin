@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
@@ -24,9 +23,7 @@ type Plugin struct {
 
 func New() *Plugin {
 	return &Plugin{
-		metadataProvider: &ecsMetadataProvider{
-			client: &http.Client{},
-		},
+		metadataProvider: &ecsMetadataProvider{},
 	}
 }
 

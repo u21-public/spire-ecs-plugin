@@ -16,7 +16,7 @@ import (
 	"os"
 )
 
-const metadata_env_var_name = "ECS_CONTAINER_METADATA_URI_V4"
+const metadataEnvVarName = "ECS_CONTAINER_METADATA_URI_V4"
 
 type metadataRootResponse struct {
 	Name   string            `json:"Name"`
@@ -42,29 +42,27 @@ type metadataProvider interface {
 	getMetadata() (metadataResponse, error)
 }
 
-type httpClient interface {
-	Get(url string) (*http.Response, error)
-}
-
-type ecsMetadataProvider struct {
-	client httpClient
-}
+type ecsMetadataProvider struct{}
 
 func (e *ecsMetadataProvider) getMetadata() (metadataResponse, error) {
-	metadata_url := os.Getenv(metadata_env_var_name)
+	metadata_url := os.Getenv(metadataEnvVarName)
 	if metadata_url == "" {
 		return metadataResponse{IsEmpty: true}, errors.New("metadata url environment variable not found")
 	}
 
-	root_resp, err := e.client.Get(metadata_url)
-	if err != nil {
-		return metadataResponse{IsEmpty: true}, err
-	}
+	client := http.Client{}
 
-	task_resp, err := e.client.Get(metadata_url + "/task")
+	root_resp, err := client.Get(metadata_url)
 	if err != nil {
 		return metadataResponse{IsEmpty: true}, err
 	}
+	defer root_resp.Body.Close()
+
+	task_resp, err := client.Get(metadata_url + "/task")
+	if err != nil {
+		return metadataResponse{IsEmpty: true}, err
+	}
+	defer task_resp.Body.Close()
 
 	var root_data metadataRootResponse
 	var task_data metadataTaskResponse

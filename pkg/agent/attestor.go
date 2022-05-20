@@ -24,6 +24,7 @@ type Plugin struct {
 
 func NewECSWorkloadAttestor() *Plugin {
 	return &Plugin{
+		logger:           hclog.NewNullLogger(),
 		metadataProvider: &ecsMetadataProvider{},
 	}
 }

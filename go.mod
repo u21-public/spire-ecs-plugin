@@ -1,4 +1,4 @@
-module github.com/u21/spire-ecs-plugin
+module github.com/u21-public/spire-ecs-plugin
 
 go 1.18
 
